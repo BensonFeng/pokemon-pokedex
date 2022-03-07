@@ -1,30 +1,20 @@
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import Head from "next/head";
 import styles from "../../styles/Details.module.css";
-import { useRouter } from "next/router";
 
-const Details = () => {
-  const [pokemon, setPokemon] = useState(null);
+export async function getServerSideProps(staticProps) {
+  const response = await fetch(
+    `https://jherr-pokemon.s3.us-west-1.amazonaws.com/pokemon/${staticProps.params.id}.json`
+  );
+  const data = await response.json();
+  return {
+    props: {
+      pokemon: data,
+    }, // will be passed to the page component as props
+  };
+}
 
-  const {
-    query: { id },
-  } = useRouter();
-  useEffect(() => {
-    const getPokemon = async () => {
-      const response = await fetch(
-        `https://jherr-pokemon.s3.us-west-1.amazonaws.com/pokemon/${id}.json`
-      );
-      const data = await response.json();
-      setPokemon(data);
-    };
-    if (id) {
-      getPokemon();
-    }
-  }, [id]);
-
-  if (!pokemon) return null;
-
+const Details = ({ pokemon }) => {
   return (
     <div>
       <Head>
