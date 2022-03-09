@@ -1,24 +1,26 @@
 import Link from "next/link";
 import Head from "next/head";
 import styles from "../../styles/Details.module.css";
+import { GetStaticProps, GetStaticPaths } from "next";
 
-export async function getStaticPaths() {
+export const getStaticPaths: GetStaticPaths = async () => {
   const response = await fetch(
     `https://jherr-pokemon.s3.us-west-1.amazonaws.com/index.json`
   );
   const pokemons = await response.json();
-  const paths = pokemons.map((pokemon) => ({
+
+  const paths = pokemons.map((pokemon: { id: number }) => ({
     params: { id: pokemon.id.toString() },
   }));
   return {
     paths,
-    fallback: true,
+    fallback: false,
   };
-}
+};
 
-export async function getStaticProps(staticProps) {
+export const getStaticProps: GetStaticProps = async (context) => {
   const response = await fetch(
-    `https://jherr-pokemon.s3.us-west-1.amazonaws.com/pokemon/${staticProps.params.id}.json`
+    `https://jherr-pokemon.s3.us-west-1.amazonaws.com/pokemon/${context?.params?.id}.json`
   );
   const data = await response.json();
   return {
@@ -26,9 +28,18 @@ export async function getStaticProps(staticProps) {
       pokemon: data,
     }, // will be passed to the page component as props
   };
-}
+};
 
-const Details = ({ pokemon }) => {
+type AppProps = {
+  pokemon: {
+    name: string;
+    stats: { name: string; value: number }[];
+    type: string[];
+    image: string;
+  };
+};
+
+const Details = ({ pokemon }: AppProps) => {
   return (
     <div>
       <Head>
@@ -44,7 +55,7 @@ const Details = ({ pokemon }) => {
           <img
             className={styles.picture}
             src={`https://jherr-pokemon.s3.us-west-1.amazonaws.com/${pokemon.image}`}
-            alt={pokemon.name.english}
+            alt={pokemon.name}
           />
         </div>
         <div>
