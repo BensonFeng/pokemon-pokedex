@@ -2,7 +2,21 @@ import Link from "next/link";
 import Head from "next/head";
 import styles from "../../styles/Details.module.css";
 
-export async function getServerSideProps(staticProps) {
+export async function getStaticPaths() {
+  const response = await fetch(
+    `https://jherr-pokemon.s3.us-west-1.amazonaws.com/index.json`
+  );
+  const pokemons = await response.json();
+  const paths = pokemons.map((pokemon) => ({
+    params: { id: pokemon.id.toString() },
+  }));
+  return {
+    paths,
+    fallback: true,
+  };
+}
+
+export async function getStaticProps(staticProps) {
   const response = await fetch(
     `https://jherr-pokemon.s3.us-west-1.amazonaws.com/pokemon/${staticProps.params.id}.json`
   );
