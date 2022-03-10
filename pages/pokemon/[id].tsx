@@ -60,7 +60,18 @@ const Details = ({ pokemon }: AppProps) => {
         </div>
         <div>
           <div className={styles.name}>{pokemon.name}</div>
-          <div className={styles.type}>{pokemon.type.join(", ")}</div>
+          <div className={styles.type}>
+            {pokemon.type
+              .filter(
+                (e) =>
+                  [
+                    "Super awesome",
+                    "Crazy awesome",
+                    "Mucho crazy awesome",
+                  ].indexOf(e) < 0
+              )
+              .join(", ")}
+          </div>
           <table>
             <thead className={styles.header}>
               <tr>
